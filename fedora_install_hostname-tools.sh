@@ -1,44 +1,39 @@
 #!/bin/sh
 
-HOSTNAME_NSUPDATE_FILE=${HOSTNAME_NSUPDATE_FILE:-https://github.com/estuardoquan/usr-local-bin/raw/refs/heads/main/hostname-nsupdate.sh}
-HOSTNAME_NSUPDATE_OUT=${HOSTNAME_NSUPDATE_OUT:-/usr/local/bin/hostname-nsupdate}
+GIT_FILES=${GIT_FILES:-
+"https://raw.githubusercontent.com/estuardoquan/usr-local-bin/refs/heads/main/hostname-change.sh
+https://raw.githubusercontent.com/estuardoquan/usr-local-bin/refs/heads/main/hostname-nsupdate.sh"
+}
 
-curl -s -o ${HOSTNAME_NSUPDATE_OUT} ${HOSTNAME_NSUPDATE_FILE}
+for f in ${GIT_FILES}; do
+    curl -sO $f
 
-if [ -f ${HOSTNAME_NSUPDATE_OUT} ]; then
-    chmod +x ${HOSTNAME_NSUPDATE_OUT}
-fi
+    chmod +x $(basename $f)
+done
 
-HOSTNAME_CHANGE_FILE=${HOSTNAME_CHANGE_FILE:-https://github.com/estuardoquan/usr-local-bin/raw/refs/heads/main/hostname-change.sh}
-HOSTNAME_CHANGE_OUT=${HOSTNAME_CHANGE_OUT:-/usr/local/bin/hostname-change}
+WATCH_DIR=${WATCH_DIR:-/etc/systemd/system}
+WATCH_PATH=${WATCH_PATH:-$HOSTNAME_WATCH_DIR/hostname-watch.path}
+WATCH_SERVICE=${WATCH_SERVICE:-$HOSTNAME_WATCH_DIR/hostname-watch.service}
+WATCH_EXEC=${WATCH_EXEC:-/usr/local/bin/hostname-change}
 
-curl -s -o ${HOSTNAME_CHANGE_OUT} ${HOSTNAME_CHANGE_FILE}
+set -- \
+    "[Unit]" \
+    "Description='Log hostname changes'" \
+    "[Service]" \
+    "Type=oneshot" \
+    "ExecStart=${WATCH_EXEC}"
 
-if [ -f ${HOSTNAME_CHANGE_OUT} ]; then
-    chmod +x ${HOSTNAME_CHANGE_OUT}
-fi
+printf "%s\n" $@ > ${WATCH_SERVICE}
 
-HOSTNAME_WATCH_DIR=${HOSTNAME_WATCH_DIR:-/etc/systemd/system}
-HOSTNAME_WATCH_PATH=${HOSTNAME_WATCH_PATH:-$HOSTNAME_WATCH_DIR/hostname-watch.path}
-HOSTNAME_WATCH_SERVICE=${HOSTNAME_WATCH_SERVICE:-$HOSTNAME_WATCH_DIR/hostname-watch.service}
+set -- \
+    "[Unit]" \
+    "Description='Watch /etc/hostname for changes'" \
+    "[Path]" \
+    "PathModified=/etc/hostname" \
+    "Unit=$(basename ${WATCH_SERVICE})" \
+    "[Install]" \
+    "WantedBy=multi-user.target"
 
-cat << EOF > ${HOSTNAME_WATCH_PATH}
-[Unit]
-Description='Watch /etc/hostname for changes'
 
-[Path]
-PathModified=/etc/hostname
-Unit=hostname-watch.service
+printf "%s\n" $@ > ${WATCH_PATH}
 
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat << EOF > ${HOSTNAME_WATCH_SERVICE}
-[Unit]
-Description='Log hostname changes'
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/hostname-change
-EOF
