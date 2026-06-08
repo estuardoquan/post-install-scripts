@@ -10,7 +10,7 @@ for f in ${TARGET}; do
     n=$(basename $f)
     curl -s -o ${DEST}/$n $f
 
-    chmod +x $n 
+    chmod +x ${DEST}/$n 
 done
 unset f n
 
