@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DOMAINS=${DOMAINS:-}
-DNS=${DNS:-8.8.8.8}
-FALLBACK=${FALLBACK:-1.1.1.1}
-OUT=${OUT:-/etc/systemd/resolved.conf}
+RESOLVED_DOMAINS=${RESOLVED_DOMAINS:-}
+RESOLVED_DNS=${RESOLVED_DNS:-8.8.8.8}
+RESOLVED_FALLBACK=${RESOLVED_FALLBACK:-1.1.1.1}
+RESOLVED_OUT=${RESOLVED_OUT:-/etc/systemd/resolved.conf}
 
 set -- \
     "[Resolve]" \
