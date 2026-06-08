@@ -7,12 +7,12 @@ RESOLVED_OUT=${RESOLVED_OUT:-/etc/systemd/resolved.conf}
 
 set -- \
     "[Resolve]" \
-    "DNS=${DNS}" \
-    "FallbackDNS=${FALLBACK}"
+    "DNS=${RESOLVED_DNS}" \
+    "FallbackDNS=${RESOLVED_FALLBACK}"
 
-if [ -n "${DOMAINS}" ]; then
+if [ -n "${RESOLVED_DOMAINS}" ]; then
     set -- $@ \
-        "Domains=${DOMAINS}"
+        "Domains=${RESOLVED_DOMAINS}"
 fi
 
-printf "%s\n" $@ > ${OUT}
+printf "%s\n" $@ > ${RESOLVED_OUT}
