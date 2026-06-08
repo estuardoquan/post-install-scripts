@@ -1,15 +1,15 @@
 #!/bin/sh
 
-CERT=${CERT:-ca.local/roots.pem}
-OUT=${OUT:-/etc/pki/ca-trust/source/anchors/roots.pem}
+TARGET=${TARGET:-ca.local/roots.pem}
+DEST=${DEST:-/etc/pki/ca-trust/source/anchors}
 
-INSECURE=${INSECURE:-0}
-UPDATE=${UPDATE:-0}
+INSECURE=${INSECURE:-1}
+UPDATE=${UPDATE:-1}
 
 set -- \
     -s \
-    -o ${OUT}\
-    https://${CERT}
+    -o ${DEST}/$(basename ${TARGET}) \
+    https://${TARGET}
 
 if [ ${INSECURE} = 1 ]; then
     set -- $@ \
