@@ -17,7 +17,7 @@ if [ ${CA_INSECURE} = 1 ]; then
 fi
 
 
-echo $@
+curl $@
 
 if [ $? != 0 ]; then
     printf "%s\n" ERROR
