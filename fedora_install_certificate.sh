@@ -1,14 +1,14 @@
 #!/bin/sh
 
 CA_TARGET=${CA_TARGET:-https://ca.local/roots.pem}
-CA_DEST=${CA_DEST:-/etc/pki/ca-trust/source/anchors}
+CA_DEST=${CA_DEST:-/etc/pki/ca-trust/source/anchors/$(basename ${CA_TARGET})}
 
 CA_INSECURE=${CA_INSECURE:-1}
 CA_UPDATE=${CA_UPDATE:-1}
 
 set -- \
     -s \
-    -o ${CA_DEST}/$(basename ${CA_TARGET}) \
+    -o ${CA_DEST} \
     ${CA_TARGET}
 
 if [ ${CA_INSECURE} = 1 ]; then
