@@ -21,7 +21,7 @@ WATCH_EXEC=${WATCH_EXEC:-/usr/local/bin/hostname-change.sh}
 
 set -- \
     "[Unit]" \
-    "Description='Log hostname changes'" \
+    "Description='watch-hostname-service'" \
     "[Service]" \
     "Type=oneshot" \
     "ExecStart=${WATCH_EXEC}"
@@ -30,7 +30,7 @@ printf "%s\n" $@ > ${WATCH_SERVICE}
 
 set -- \
     "[Unit]" \
-    "Description='Watch /etc/hostname for changes'" \
+    "Description='watch-hostname-path'" \
     "[Path]" \
     "PathModified=/etc/hostname" \
     "Unit=$(basename ${WATCH_SERVICE})" \
